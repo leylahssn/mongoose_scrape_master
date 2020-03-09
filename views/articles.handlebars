@@ -1,0 +1,84 @@
+<div class="container">
+    <a href="{{data.link}}">
+        <h2 style="font-size:xx-large;">{{data.title}}</h2>
+    </a>
+
+    <div class="row">
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="name-note" type="text">
+                    <label class="active" for="name-note">Name</label>
+                </div>
+                <div class="input-field col s12">
+                    <textarea id="note-description" class="materialize-textarea"></textarea>
+                    <label class="active" for="note-description"
+                        style="font-family: cursive;font-size:medium">Comment</label>
+                </div>
+            </div>
+            <button data-id={{data._id}} class="waves-effect waves-light btn blue darken-2" id="submit-note"
+                name="submit">Submit
+                <i class="material-icons right">send</i>
+            </button>
+        </form>
+    </div>
+
+
+    <div class="row">
+        <div class="col s12">
+            <p style="font-family: cursive;font-size:x-large;text-decoration: underline">Previous Comments:</p>
+            {{#if data.note}}
+            {{#each data.note}}
+            <h4><strong>{{this.name}}</strong></h4>
+            <h5>{{this.body}}</h5>
+            <hr>
+            <button data-id={{this._id}} class="waves-effect waves-light btn blue darken-2" id="delete-note">Delete
+                <i class="material-icons right">delete</i>
+            </button>
+
+            {{/each}}
+            {{else}}
+            <h5>There are no comments on this article.</h5>
+            {{/if}}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Submit a note / comment 
+    //====================================================================
+    $(document).on("click", "#submit-note", function () {
+        var thisId = $(this).attr("data-id");
+
+        $.ajax({
+            method: "POST",
+            url: "/articles/" + thisId,
+            data: {
+                name: $("#name-note").val(),
+                body: $("#note-description").val()
+            }
+        })
+            .then(function (data) {
+                console.log(data);
+                window.location.replace("/articles/" + data._id);
+            });
+        $("#name-note").val("");
+        $("#note-description").val("");
+    });
+
+    // delete a note / comment 
+    //====================================================================
+
+    $(document).on("click", "#delete-note", function () {
+        var thisId = $(this).attr("data-id");
+        $.ajax({
+            method: "DELETE",
+            url: "/articles/" + thisId
+        })
+            .then(function (data) {
+                console.log(data);
+                location.reload();
+            });
+    });
+</script>
