@@ -31,17 +31,14 @@ var app = express();
 //=======================================
 app.use(logger("dev"));
 
-// Use body-parser for handling form submissions
-//====================================================
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//Set static folder
-// =============================================================
+
 app.use(express.static(path.join(__dirname, "/public")));
 
-//Handlebars
-// =============================================================
+
 app.engine(
     "handlebars",
     exphbs({
@@ -50,25 +47,20 @@ app.engine(
 );
 app.set("view engine", "handlebars");
 
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-//=========================================================================================
+
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoose-scrape7";
 
-// Set mongoose to leverage built in JavaScript ES6 Promises
-// Connect to the Mongo DB
-//=========================================================
+
 mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI);
 var results = [];
 
-// Route
-//==========================================================
+
 app.get("/", function (req, res) {
     res.render("index");
 });
 
-// A GET route for scraping The Wall Street Journal website
-//============================================================
+
 app.get("/scrape", function (req, res) {
     var found;
     var titleArr = [];
@@ -95,13 +87,12 @@ app.get("/scrape", function (req, res) {
                 res.render("scrape", {
                     articles: results
                 });
-                // res.json(dbArticle);
+                
             })
         });
 });
 
-// Route for getting all Articles from the db
-//===============================================
+
 app.get("/saved", function (req, res) {
     db.Article.find({})
         .then(function (dbArticle) {
@@ -115,21 +106,19 @@ app.get("/saved", function (req, res) {
         });
 });
 
-// Route for creating an Article in the db
-//==============================================
+
 app.post("/api/saved", function (req, res) {
     db.Article.create(req.body)
         .then(function (dbArticle) {
             res.json(dbArticle);
         })
         .catch(function (err) {
-            // If an error occurred, send it to the client
+            
             res.json(err);
         });
 });
 
-// Route for grabbing a specific Article by id, populate it with it's note
-//============================================================================
+
 app.get("/articles/:id", function (req, res) {
     console.log(req.params.id);
     db.Article.findOne({ _id: req.params.id })
@@ -147,8 +136,7 @@ app.get("/articles/:id", function (req, res) {
         });
 });
 
-//Route for deleting an article from the db
-//================================================
+
 app.delete("/saved/:id", function (req, res) {
     db.Article.deleteOne({ _id: req.params.id })
         .then(function (removed) {
@@ -158,8 +146,7 @@ app.delete("/saved/:id", function (req, res) {
         });
 });
 
-//Route for deleting a note
-//================================================
+
 app.delete("/articles/:id", function (req, res) {
     db.Note.deleteOne({ _id: req.params.id })
         .then(function (removed) {
@@ -169,8 +156,7 @@ app.delete("/articles/:id", function (req, res) {
         });
 });
 
-// Route for saving/updating an Article's associated Note
-//==========================================================
+
 app.post("/articles/:id", function (req, res) {
     db.Note.create(req.body)
         .then(function (dbNote) {
@@ -188,8 +174,7 @@ app.post("/articles/:id", function (req, res) {
         })
 });
 
-// Starts the server to begin listening
-// =============================================================
+
 app.listen(PORT, function () {
     console.log("App running on port " + PORT + "!");
 });

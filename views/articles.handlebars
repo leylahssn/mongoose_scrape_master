@@ -46,8 +46,7 @@
 
 
 <script>
-    // Submit a note / comment 
-    //====================================================================
+   
     $(document).on("click", "#submit-note", function () {
         var thisId = $(this).attr("data-id");
 
@@ -67,9 +66,7 @@
         $("#note-description").val("");
     });
 
-    // delete a note / comment 
-    //====================================================================
-
+   
     $(document).on("click", "#delete-note", function () {
         var thisId = $(this).attr("data-id");
         $.ajax({
